@@ -91,7 +91,7 @@ class Tale(HS):
         @param neg_w: negative output tokens, shape (batch_size, neg_path_len)
         """
         pos_score, neg_score = super().forward(pos_u, pos_w, neg_w, sum=False)  # (batch_size, pos_path_len)
-        prop = kwargs['prop']
+        prop = kwargs['prop'] # (batchsize,)
         pos_score, neg_score = (-1 * (item.sum(axis=1) * prop).sum() for item in (pos_score, neg_score))
         return pos_score + neg_score
 

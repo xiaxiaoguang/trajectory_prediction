@@ -108,6 +108,7 @@ class CTLE(nn.Module):
         self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers,
                                              norm=nn.LayerNorm(self.embed_size, eps=1e-6))
         self.detach = detach
+        
         if init_param:
             self.apply(weight_init)
 
@@ -147,7 +148,6 @@ class MaskedLM(nn.Module):
         self.linear = nn.Linear(input_size, vocab_size)
         self.dropout = nn.Dropout(0.1)
         self.loss_func = nn.CrossEntropyLoss()
-
         self.vocab_size = vocab_size
 
     def forward(self, x, **kwargs):

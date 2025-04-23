@@ -68,20 +68,28 @@ class Dataset:
         data['day'] = data['datetime'].dt.day
         if select_days is not None:
             data = data[data['day'].isin(self.split_days[select_days])]
+
         data['weekday'] = data['datetime'].dt.weekday
         data['timestamp'] = data['datetime'].apply(lambda x: x.timestamp())
+        # data['time_delta'] = data['timestamp'].shift(-1) - data['timestamp']
+        
         seq_set = []
         for (user_index, day), group in data.groupby(['user_index', 'day']):
-
             if group.shape[0] < min_len:
                 continue
+
+            group['time_delta'] = group['timestamp'].shift(-1) - group['timestamp']
+            group['time_delta'] = [0] + group['time_delta'].iloc[:-1].tolist()
+            group['time_delta'] = group['time_delta']/3600
+            group['time_delta'] = group['time_delta'].cumsum()
 
             one_set = [user_index, 
             group['loc_index'].tolist(), 
             group['lat'].tolist(),
             group['lng'].tolist(),
-            group.shape[0]]
-
+            group.shape[0],
+            group['time_delta'],
+            ]
             seq_set.append(one_set)
 
         return seq_set

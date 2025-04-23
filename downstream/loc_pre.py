@@ -66,14 +66,6 @@ class Seq2SeqLocPredictor(nn.Module, ABC):
         out = self.out_linear(decoder_out)  # (batch_size, pre_len, output_size)
         return out
 
-def seq2seq_forward(encoder, decoder, lstm_input, valid_len, pre_len):
-    his_len = (valid_len - pre_len).to('cpu')
-    src_padded_embed = pack_padded_sequence(lstm_input, his_len, batch_first=True, enforce_sorted=False)
-    _, hc = encoder(src_padded_embed)
-    trg_embed = torch.stack([torch.cat([lstm_input[i, start - 1:start], lstm_input[i, -pre_len:-1]], dim=0)
-                             for i, start in enumerate(his_len)], dim=0)
-    decoder_out, _ = decoder(trg_embed, hc)  # (batch_size, pre_len, hidden_size)
-    return decoder_out
 
 class TransformerPredictor(nn.Module, ABC):
     def __init__(self, embed_layer, input_size, hidden_size, output_size, num_layers, num_heads=8, ff_dim=512):
@@ -139,7 +131,6 @@ class DecoderPredictor(nn.Module, ABC):
         super().__init__()
         self.__dict__.update(locals())        
         
-        self.embed_layer = embed_layer
         self.hidden_size = hidden_size
 
         encoder_layer = nn.TransformerEncoderLayer(
@@ -153,6 +144,12 @@ class DecoderPredictor(nn.Module, ABC):
             nn.Dropout(0.1),
             nn.Linear(hidden_size * 4, output_size)
         )
+        # Freeze all parameters in embed_layer
+        self.embed_layer = embed_layer
+        # for param in self.embed_layer.parameters():
+        #     param.requires_grad = False
+        self.add_module('embed_layer', self.embed_layer)
+
         
     def forward(self, full_seq, valid_len, pre_len, **kwargs):
         self.pre_len = pre_len
@@ -296,7 +293,7 @@ class StlstmLocPredictor(nn.Module, ABC):
 
         time_delta = kwargs['time_delta'][:, 1:]
         dist = kwargs['dist'][:, 1:]
-
+        
         time_slot_i = torch.floor(torch.clamp(time_delta, 0, self.time_thres) / self.time_thres * self.num_slots).long()
         dist_slot_i = torch.floor(torch.clamp(dist, 0, self.dist_thres) / self.dist_thres * self.num_slots).long()  # (batch, seq_len-1)
         aux_input = torch.cat([self.aux_sos.reshape(1, 1, -1).repeat(batch_size, 1, 1),
@@ -472,7 +469,7 @@ def loc_prediction(dataset, pre_model, pre_len, num_epoch, batch_size, device):
             src_seq, trg_seq = create_src_trg(full_seq, pre_len, fill_value=dataset.num_loc)
             src_seq, trg_seq = (torch.from_numpy(item).long().to(device) for item in [src_seq, trg_seq])
             imp_seq = torch.full_like(trg_seq,fill_value=dataset.num_loc).to(device)
-            full_seq = torch.cat([src_seq, imp_seq], dim=-1)
+            full_seq = torch.cat([src_seq, trg_seq], dim=-1)
 
             full_t = _create_src_trg(timestamp, 0)
             full_time_delta = _create_src_trg(time_delta, 0)
@@ -595,7 +592,7 @@ def mc_next_loc_prediction(dataset, pre_model, pre_len):
 
 def fourier_locpred(dataset, pre_model, pre_len, num_epoch, batch_size, device):
     pre_model = pre_model.to(device)
-    optimizer = torch.optim.Adam(pre_model.parameters(), lr=1e-4)
+    optimizer = torch.optim.Adam(pre_model.parameters(), lr=5e-4)
     loss_func = nn.CrossEntropyLoss()
 
     def pre_func(batch):
@@ -607,8 +604,10 @@ def fourier_locpred(dataset, pre_model, pre_len, num_epoch, batch_size, device):
             user_index, full_seq, weekday, timestamp, length, time_delta, dist, lat, lng = zip(*batch)
             user_index, length = (torch.tensor(item).long().to(device) for item in (user_index, length))
             
-            _, rel_trg_seq = create_src_trg(full_seq, pre_len, fill_value=dataset.num_loc)
-            rel_trg_seq = (torch.from_numpy(rel_trg_seq).long().to(device))
+            full_ind_seq, rel_trg_seq = create_src_trg(full_seq, pre_len, fill_value=dataset.num_loc)
+            full_ind_seq, rel_trg_seq = (torch.from_numpy(item).long().to(device) for item in [full_ind_seq, rel_trg_seq])
+            imp_seq = torch.full_like(rel_trg_seq,fill_value=dataset.num_loc).to(device)
+            full_seq = torch.cat([full_ind_seq, imp_seq], dim=-1)
 
             src_seq, trg_seq = create_src_trg(lat, pre_len, fill_value=0.0)
             src_seq, trg_lat_seq = (torch.from_numpy(item).to(device) for item in [src_seq, trg_seq])
@@ -619,15 +618,14 @@ def fourier_locpred(dataset, pre_model, pre_len, num_epoch, batch_size, device):
             src_seq, trg_lng_seq = (torch.from_numpy(item).to(device) for item in [src_seq, trg_seq])
             full_lng = torch.cat([src_seq, imp_seq], dim=-1)
 
-            full_seq = torch.stack([full_lat, full_lng],dim=-1).to(torch.float32)
-            # trg_seq  = torch.stack([trg_lat_seq,trg_lng_seq],dim=-1)
+            full_latlng = torch.stack([full_lat, full_lng],dim=-1).to(torch.float32)
             full_t = _create_src_trg(timestamp, 0)
             full_time_delta = _create_src_trg(time_delta, 0)
             full_dist = _create_src_trg(dist, 0)
             full_lat = _create_src_trg(lat, 0)
             full_lng = _create_src_trg(lng, 0)
 
-            out = pre_model(full_seq, length, pre_len, user_index=user_index, timestamp=full_t,
+            out = pre_model(full_latlng, length, pre_len, user_index=user_index, full_loc_seq=full_seq, timestamp=full_t,
                             time_delta=full_time_delta, dist=full_dist, lat=full_lat, lng=full_lng)
 
             out = out.reshape(-1, pre_model.output_size)
@@ -644,6 +642,8 @@ def fourier_locpred(dataset, pre_model, pre_len, num_epoch, batch_size, device):
 
     os.makedirs(save_folder, exist_ok=True)
     shutil.copy("./downstream/loc_pre.py",save_folder)
+    shutil.copy("./run.py",save_folder)
+
     best_acc = 0.0
     best_model_path = os.path.join(save_folder, "best_model.pth")
     # Log file for training results

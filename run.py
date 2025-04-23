@@ -15,7 +15,7 @@ from embed.tale import TaleData, Tale, train_tale
 from embed.w2v import SkipGramData, SkipGram, train_skipgram
 from embed.teaser import TeaserData, Teaser, train_teaser
 from embed.poi2vec import P2VData, POI2Vec
-from embed.fourier import FourierEncoding_IM, train_fourier, MaskedLM2
+from embed.fourier import FourierEncoding_IM, train_fourier, Masked_GC, Masked_LC, Predict_TM
 if __name__ == '__main__':
 
     parser = ArgumentParser()
@@ -78,7 +78,7 @@ if __name__ == '__main__':
             save_path = os.path.join(save_folder,model_path)
             if not os.path.exists(save_folder):
                 os.makedirs(save_folder) 
-
+            
             if os.path.exists(save_path):
                 print("load existing skipgram embedding")
                 embed_layer = torch.load(save_path).to(device)
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     
 
     if embed_name == 'fourier':
-        d_model = embed_size * 2
+        d_model = embed_size * 4
         max_lina = embed_size
         nhead = 4
         mask_prob = 0.2
@@ -178,15 +178,16 @@ if __name__ == '__main__':
         save_path = os.path.join(save_folder,model_path)
         if not os.path.exists(save_folder):
             os.makedirs(save_folder) 
+
         if os.path.exists(save_path):
             print("load existing fourier embedding")
             embed_layer = torch.load(save_path).to(device)
         else:
-            obj_models = [MaskedLM2(embed_size)]
-            obj_models = nn.ModuleList(obj_models)            
-            fourier = FourierEncoding_IM(d_model,embed_size,device,nhead,max_lina,num_layers)
-            embed_layer = train_fourier(dataset, fourier, obj_models, mask_prop = mask_prob, num_epoch=embed_epoch, batch_size=64, device=device)
-            torch.save(embed_layer, save_path)
+            obj_models = [Masked_GC(embed_size)]
+            # Masked_LC(embed_size,num_vocab=dataset.num_loc),Predict_TM(embed_size,4)
+            obj_models = nn.ModuleList(obj_models)        
+            fourier = FourierEncoding_IM(d_model,embed_size,dataset.num_loc,device,nhead,dataset.num_loc,num_layers)
+            embed_layer = train_fourier(dataset, fourier, obj_models, mask_prop = mask_prob, num_epoch=embed_epoch, batch_size=64, save_path=save_path, device=device)
 
         # embed_layer = StaticEmbed(embed_mat)
 
@@ -243,7 +244,7 @@ if __name__ == '__main__':
             if ctle_objective == "mh":
                 obj_models.append(MaskedHour(embed_size))
             obj_models = nn.ModuleList(obj_models)
-        
+
             ctle_embedding = CTLEEmbedding(encoding_layer, embed_size, dataset.num_loc)
             ctle_model = CTLE(ctle_embedding, hidden_size, num_layers=ctle_num_layers, num_heads=ctle_num_heads,
                             init_param=init_param, detach=ctle_detach)

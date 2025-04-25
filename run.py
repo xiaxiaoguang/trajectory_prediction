@@ -15,7 +15,8 @@ from embed.tale import TaleData, Tale, train_tale
 from embed.w2v import SkipGramData, SkipGram, train_skipgram
 from embed.teaser import TeaserData, Teaser, train_teaser
 from embed.poi2vec import P2VData, POI2Vec
-from embed.fourier import FourierEncoding_IM, train_fourier, Masked_GC, Masked_LC, Predict_TM
+from embed.fourier import FourierEncoding_IM, train_fourier, Masked_GC
+from embed.basic_trans import *
 if __name__ == '__main__':
 
     parser = ArgumentParser()
@@ -30,6 +31,7 @@ if __name__ == '__main__':
     parser.add_argument('--task_epoch', type=int, default=2)
     parser.add_argument('--task_batch_size', type=int, default=64)
     parser.add_argument('--pre_len', type=int, default=3)
+    parser.add_argument('--dataset', type=str, default='pek')
     args = parser.parse_args()
     
     device = f"cuda:{args.device}"
@@ -42,13 +44,20 @@ if __name__ == '__main__':
     init_param = args.init_param
     task_batch_size = args.task_batch_size
     pre_model_name = args.pre_model_name
+    dataset_name = args.dataset
     hidden_size = args.hidden_size if args.hidden_size is not None else 4*args.embed_size
     
     import time
     a = time.time()
-    raw_df = pd.read_hdf(os.path.join('datasets', 'pek.h5'), key='data')
-    coor_df = pd.read_hdf(os.path.join('datasets', 'pek.h5'), key='poi')
-    split_days = [list(range(9, 12)), [12], [13]]
+    if dataset_name == 'pek':
+        dataset_path = os.path.join('datasets', 'pek.h5')
+        split_days = [list(range(9, 12)), [12], [13]]
+    elif dataset_name == 'taxi':
+        dataset_path = os.path.join('datasets', 'taxi.h5')
+        split_days = [list(range(2, 5)), [5], [6]]
+    raw_df = pd.read_hdf(dataset_path, key='data')
+    coor_df = pd.read_hdf(dataset_path, key='poi')
+    
     dataset = Dataset(raw_df, coor_df, split_days)
     print(time.time()-a)
     
@@ -181,7 +190,7 @@ if __name__ == '__main__':
 
         if os.path.exists(save_path):
             print("load existing fourier embedding")
-            embed_layer = torch.load(save_path).to(device)
+            embed_layer = torch.load(save_path, weights_only=False).to(device)
         else:
             obj_models = [Masked_GC(embed_size)]
             # Masked_LC(embed_size,num_vocab=dataset.num_loc),Predict_TM(embed_size,4)

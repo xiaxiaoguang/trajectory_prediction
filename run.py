@@ -16,7 +16,6 @@ from embed.w2v import SkipGramData, SkipGram, train_skipgram
 from embed.teaser import TeaserData, Teaser, train_teaser
 from embed.poi2vec import P2VData, POI2Vec
 from embed.fourier import FourierEncoding_IM, train_fourier, Masked_GC
-from embed.basic_trans import *
 if __name__ == '__main__':
 
     parser = ArgumentParser()
@@ -190,7 +189,7 @@ if __name__ == '__main__':
 
         if os.path.exists(save_path):
             print("load existing fourier embedding")
-            embed_layer = torch.load(save_path, weights_only=False).to(device)
+            embed_layer = torch.load(save_path).to(device)
         else:
             obj_models = [Masked_GC(embed_size)]
             # Masked_LC(embed_size,num_vocab=dataset.num_loc),Predict_TM(embed_size,4)

@@ -16,6 +16,7 @@ from embed.w2v import SkipGramData, SkipGram, train_skipgram
 from embed.teaser import TeaserData, Teaser, train_teaser
 from embed.poi2vec import P2VData, POI2Vec
 from embed.fourier import FourierEncoding_IM, train_fourier, Masked_GC
+
 if __name__ == '__main__':
 
     parser = ArgumentParser()

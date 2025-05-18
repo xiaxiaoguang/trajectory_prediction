@@ -80,13 +80,11 @@ This module contains a diverse set of neural architectures tailored for next-loc
 | `DecoderPredictor` / `DecoderPredictor2` | Sequence-to-sequence decoders, used in Transformer-based forecasting.                                 |
 | `TransformerPredictor`                   | Utilizes self-attention to model global dependencies in trajectories.                                 |
 | `Seq2SeqLocPredictor`                    | Classic encoder-decoder RNN model for sequential prediction.                                          |
-| `MCLocPredictor`                         | Return the last token of trajectory.                                 |
 
 | Function                      | Purpose                                                                                    |
 | ----------------------------- | ------------------------------------------------------------------------------------------ |
 | `fourier_locpred(...)`        | Predict future locations using Fourier-based encoding and learned spatial representations. |
 | `loc_prediction(...)`         | General interface for training and evaluating location prediction models.                  |
-| `mc_next_loc_prediction(...)` | Fast inference using the memory-compressed `MCLocPredictor`.                               |
 
 
 ## Embed

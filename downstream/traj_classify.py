@@ -5,7 +5,7 @@ from torch import nn
 from torch.nn.utils.rnn import pack_padded_sequence
 from sklearn.metrics import accuracy_score, recall_score
 
-from utils import weight_init, create_src, next_batch
+from module.utils import weight_init, create_src, next_batch
 
 
 class FCTrajectoryClassifier(nn.Module):

@@ -5,9 +5,9 @@ import torch.nn.functional as F
 from tqdm import tqdm
 from sklearn.utils import shuffle
 from itertools import zip_longest
-from utils import next_batch, weight_init
+from module.utils import next_batch, weight_init
 import matplotlib.pyplot as plt
-import os
+
 def gen_random_mask(src_valid_lens, src_len, mask_prop):
     """
     @param src_valid_lens: valid length of sequence, shape (batch_size)
@@ -23,13 +23,13 @@ def gen_random_mask(src_valid_lens, src_len, mask_prop):
 
 
 class FourierEncoding_IM(nn.Module):
-    def __init__(self, d_model: int, embed_size : int, num_vocab : int, device=None, nhead: int = 4, max_lina : int = 100, num_layers : int = 1):
+    def __init__(self, d_model: int, embed_size : int, num_vocab : int,
+                  device=None, nhead: int = 4, max_lina : int = 100, num_layers : int = 1):
         super().__init__()
         self.device  = device
         self.d_model = d_model
         self.embed_size = embed_size
         self.num_vocab = num_vocab
-
         self.frequencies = torch.linspace(1.0, max_lina, self.d_model // 2, device=device)
         # self.token_embed = nn.Embedding(num_vocab+2, d_model // 2, padding_idx=num_vocab)
         encoder_layer = nn.TransformerEncoderLayer(d_model=self.embed_size, nhead=nhead, dim_feedforward=4*self.embed_size, batch_first=True)

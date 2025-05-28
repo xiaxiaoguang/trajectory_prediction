@@ -6,7 +6,7 @@ from torch import nn
 from sklearn.utils import shuffle
 from torch.nn.utils.rnn import pack_padded_sequence
 
-from utils import next_batch
+from module.utils import next_batch
 
 
 class HierEmbedding(nn.Module):

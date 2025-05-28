@@ -6,7 +6,7 @@ import torch
 from torch import nn
 from sklearn.utils import shuffle
 from tqdm import tqdm
-from utils import next_batch, weight_init
+from module.utils import next_batch, weight_init
 
 
 def gen_random_mask(src_valid_lens, src_len, mask_prop):

@@ -8,7 +8,7 @@ from torch import nn
 from torch.nn import functional as F
 from sklearn.utils import shuffle
 
-from utils import next_batch
+from module.utils import next_batch
 
 
 def gen_token_freq(sentences):

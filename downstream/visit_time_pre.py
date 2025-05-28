@@ -10,7 +10,7 @@ from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn import functional as F
 from scipy import integrate
 
-from utils import next_batch, create_src_trg, weight_init, create_src, mean_absolute_percentage_error
+from module.utils import next_batch, create_src_trg, weight_init, create_src, mean_absolute_percentage_error
 
 
 class ERPPTimePredictor(nn.Module, ABC):

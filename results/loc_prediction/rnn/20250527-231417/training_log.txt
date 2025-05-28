@@ -1,0 +1,38 @@
+Epoch 1 - Loss: 8.360160, Acc: 0.004026, Recall: 0.000350, F1-micro: 0.004026, F1-macro: 0.000010
+New best model saved with Acc: 0.004026
+Epoch 2 - Loss: 7.721989, Acc: 0.005071, Recall: 0.000685, F1-micro: 0.005071, F1-macro: 0.000028
+New best model saved with Acc: 0.005071
+Epoch 3 - Loss: 7.467447, Acc: 0.009620, Recall: 0.001641, F1-micro: 0.009620, F1-macro: 0.000149
+New best model saved with Acc: 0.009620
+Epoch 4 - Loss: 7.232675, Acc: 0.012539, Recall: 0.002386, F1-micro: 0.012539, F1-macro: 0.000280
+New best model saved with Acc: 0.012539
+Epoch 5 - Loss: 6.904258, Acc: 0.017241, Recall: 0.003779, F1-micro: 0.017241, F1-macro: 0.000707
+New best model saved with Acc: 0.017241
+Epoch 6 - Loss: 6.593837, Acc: 0.019516, Recall: 0.005418, F1-micro: 0.019516, F1-macro: 0.001329
+New best model saved with Acc: 0.019516
+Epoch 7 - Loss: 6.357903, Acc: 0.021974, Recall: 0.006542, F1-micro: 0.021974, F1-macro: 0.001944
+New best model saved with Acc: 0.021974
+Epoch 8 - Loss: 6.173835, Acc: 0.023450, Recall: 0.007542, F1-micro: 0.023450, F1-macro: 0.002616
+New best model saved with Acc: 0.023450
+Epoch 9 - Loss: 6.015864, Acc: 0.027783, Recall: 0.009748, F1-micro: 0.027783, F1-macro: 0.003690
+New best model saved with Acc: 0.027783
+Epoch 10 - Loss: 5.871916, Acc: 0.028121, Recall: 0.010949, F1-micro: 0.028121, F1-macro: 0.004559
+New best model saved with Acc: 0.028121
+Epoch 11 - Loss: 5.749991, Acc: 0.028582, Recall: 0.010828, F1-micro: 0.028582, F1-macro: 0.004822
+New best model saved with Acc: 0.028582
+Epoch 12 - Loss: 5.632405, Acc: 0.030918, Recall: 0.012882, F1-micro: 0.030918, F1-macro: 0.005963
+New best model saved with Acc: 0.030918
+Epoch 13 - Loss: 5.526774, Acc: 0.032147, Recall: 0.013297, F1-micro: 0.032147, F1-macro: 0.006463
+New best model saved with Acc: 0.032147
+Epoch 14 - Loss: 5.429456, Acc: 0.032577, Recall: 0.013832, F1-micro: 0.032577, F1-macro: 0.007060
+New best model saved with Acc: 0.032577
+Epoch 15 - Loss: 5.333682, Acc: 0.031870, Recall: 0.014521, F1-micro: 0.031870, F1-macro: 0.008066
+Epoch 16 - Loss: 5.243416, Acc: 0.033837, Recall: 0.015976, F1-micro: 0.033837, F1-macro: 0.008949
+New best model saved with Acc: 0.033837
+Epoch 17 - Loss: 5.161638, Acc: 0.035005, Recall: 0.015906, F1-micro: 0.035005, F1-macro: 0.009142
+New best model saved with Acc: 0.035005
+Epoch 18 - Loss: 5.081889, Acc: 0.033100, Recall: 0.015210, F1-micro: 0.033100, F1-macro: 0.008539
+Epoch 19 - Loss: 5.004496, Acc: 0.036388, Recall: 0.015496, F1-micro: 0.036388, F1-macro: 0.009024
+New best model saved with Acc: 0.036388
+Epoch 20 - Loss: 4.934120, Acc: 0.036603, Recall: 0.017447, F1-micro: 0.036603, F1-macro: 0.010382
+New best model saved with Acc: 0.036603

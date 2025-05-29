@@ -179,17 +179,20 @@ class LSTMTimePredictor(nn.Module):
         event_embedding = self.embed_layer(input_events, **kwargs)  # (batch_size, seq_len, input_size)
         shifted_event_embedding = torch.cat([self.sos_token.reshape(1, 1, -1).repeat(batch_size, 1, 1), event_embedding], dim=1)  # (batch, seq_len+1, input_size)
         shifted_time = torch.cat([torch.zeros(batch_size, 1).float().to(input_time.device), input_time],
-                                 dim=-1).unsqueeze(-1)  # (batch_size, 1 + seq_len, 1)
+                                dim=-1).unsqueeze(-1)  # (batch_size, 1 + seq_len, 1)
         lstm_input = torch.cat([shifted_event_embedding, shifted_time], dim=-1)  # (batch, seq_len+1, input_size+1)
 
-        packed_lstm_input = pack_padded_sequence(lstm_input, valid_len, batch_first=True, enforce_sorted=False)
+        valid_len_cpu = valid_len.cpu()
+        packed_lstm_input = pack_padded_sequence(lstm_input, valid_len_cpu, batch_first=True, enforce_sorted=False)
         time_encoder_out, _ = self.time_encoder(packed_lstm_input)
         time_encoder_out = time_encoder_out.data  # (total_valid_len, lstm_hidden_size)
+        
         # Only use embedding vectors of locations to predict.
-        event_embedding = pack_padded_sequence(event_embedding, valid_len, batch_first=True, enforce_sorted=False).data  # (total_valid_len, input_size)
+        event_embedding = pack_padded_sequence(event_embedding, valid_len_cpu, batch_first=True, enforce_sorted=False).data  # (total_valid_len, input_size)
         cat_hidden = torch.cat([event_embedding, time_encoder_out], dim=-1) # (total_v, input_size + lstm_hidden_size)
         time_pre = self.pre_linear(cat_hidden).squeeze(-1)  # (total_v)
         return time_pre
+
 
 
 def lstm_visit_time_prediction(dataset, pre_model, num_epoch, batch_size, device):
@@ -212,6 +215,7 @@ def lstm_visit_time_prediction(dataset, pre_model, num_epoch, batch_size, device
         pre = pre_model(input_time=hours, input_events=full_event, valid_len=length, timestamp=timestamp)
         pre = pre.reshape(-1)
         # label = torch.stack([hours[i, s-pre_len:s] for i, s in enumerate(length)]).reshape(-1)
+        length = length.cpu()
         label = pack_padded_sequence(hours, length, batch_first=True, enforce_sorted=False).data
         return pre, label
 
@@ -273,6 +277,7 @@ class ScatterVisitTimePredictor(nn.Module):
         time_embedding = self.time_embed(torch.floor(input_time * self.num_time_slots).long())  # (batch_size, seq_len, input_size)
         lstm_input = torch.cat([self.sos_token.reshape(1, 1, -1).repeat(batch_size, 1, 1),
                                 torch.cat([event_embedding, time_embedding], dim=-1)], dim=1)  # (batch_size, seq_len+1, input_size * 2
+        valid_len = valid_len.cpu()
         packed_lstm_input = pack_padded_sequence(lstm_input, valid_len, batch_first=True, enforce_sorted=False)
         time_encoder_out, _ = self.time_encoder(packed_lstm_input)
         time_encoder_out = time_encoder_out.data  # (total_valid_len, lstm_hidden_size)
@@ -303,7 +308,7 @@ def scatter_visit_time_prediction(dataset, pre_model, time_output_type, num_epoc
         hours = timestamp % (24 * 60 * 60) / 60 / 60 / 24
 
         pre = pre_model(input_time=hours, input_events=full_event, valid_len=length, timestamp=timestamp)  # (batch, output_size)
-        label = pack_padded_sequence(hours, length, batch_first=True, enforce_sorted=False).data
+        label = pack_padded_sequence(hours, length.cpu(), batch_first=True, enforce_sorted=False).data
 
         if time_output_type == 'scalar':
             pre_cont = pre.reshape(-1)
@@ -347,4 +352,5 @@ def scatter_visit_time_prediction(dataset, pre_model, time_output_type, num_epoc
     print('MAE %.6f, MAPE %.6f, RMSE %.6f' % (best_mae, best_mape, best_rmse), flush=True)
 
     import os
+    os.makedirs(os.path.join('data', 'model'), exist_ok=True)
     torch.save(pre_model.state_dict(), os.path.join('data', 'model', 'downstream.model'))

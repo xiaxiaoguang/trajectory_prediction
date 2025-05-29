@@ -145,33 +145,34 @@ if __name__ == '__main__':
                 loc_prediction(dataset, pre_model, pre_len=pre_len, num_epoch=task_epoch,
                            batch_size=64, device=device)
     
-    # if task_name == 'time_pre':
-    #     pre_model_name = 'erpp'
-    #     use_event_loss = True
+    if task_name == 'time_pre':
+        pre_model_name = 'lstm'
+        use_event_loss = True
     
-    #     if pre_model_name == 'erpp':
-    #         pre_model = ERPPTimePredictor(embed_layer, input_size=embed_size, lstm_hidden_size=hidden_size,
-    #                                       hidden_size=hidden_size, output_size=dataset.num_loc, num_layers=2)
-    #         erpp_visit_time_prediction(dataset, pre_model, pre_len=pre_len, num_epoch=task_epoch,
-    #                                    batch_size=task_batch_size, device=device, use_event_loss=use_event_loss)
-    #     if pre_model_name == 'rmtpp':
-    #         pre_model = RMTPPTimePredictor(embed_layer, input_size=embed_size, lstm_hidden_size=hidden_size,
-    #                                        hidden_size=hidden_size, output_size=dataset.num_loc, num_layers=2)
-    #         erpp_visit_time_prediction(dataset, pre_model, pre_len=pre_len, num_epoch=task_epoch,
-    #                                    batch_size=task_batch_size, device=device, use_event_loss=use_event_loss)
-    #     pre_model = LSTMTimePredictor(embed_layer, input_size=embed_size, lstm_hidden_size=256,
-    #                                   fc_hidden_size=256, output_size=dataset.num_loc, num_layers=2)
-    #     lstm_visit_time_prediction(dataset, pre_model, num_epoch=task_epoch, batch_size=task_batch_size, device=device)
+        if pre_model_name == 'erpp':
+            pre_model = ERPPTimePredictor(embed_layer, input_size=embed_size, lstm_hidden_size=hidden_size,
+                                          hidden_size=hidden_size, output_size=dataset.num_loc, num_layers=2)
+            erpp_visit_time_prediction(dataset, pre_model, pre_len=pre_len, num_epoch=task_epoch,
+                                       batch_size=task_batch_size, device=device, use_event_loss=use_event_loss)
+        if pre_model_name == 'rmtpp':
+            pre_model = RMTPPTimePredictor(embed_layer, input_size=embed_size, lstm_hidden_size=hidden_size,
+                                           hidden_size=hidden_size, output_size=dataset.num_loc, num_layers=2)
+            erpp_visit_time_prediction(dataset, pre_model, pre_len=pre_len, num_epoch=task_epoch,
+                                       batch_size=task_batch_size, device=device, use_event_loss=use_event_loss)
+        if pre_model_name == 'lstm':
+            pre_model = LSTMTimePredictor(embed_layer, input_size=embed_size, lstm_hidden_size=256,
+                                        fc_hidden_size=256, output_size=dataset.num_loc, num_layers=2)
+            lstm_visit_time_prediction(dataset, pre_model, num_epoch=task_epoch, batch_size=task_batch_size, device=device)
     
-    #     num_time_slots = 48
-    #     time_output_type = 'softmax'
-    #     output_size = 1 if time_output_type == 'scalar' else num_time_slots
+        num_time_slots = 48
+        time_output_type = 'softmax'
+        output_size = 1 if time_output_type == 'scalar' else num_time_slots
     
-    #     pre_model = ScatterVisitTimePredictor(embed_layer, num_time_slots=num_time_slots,
-    #                                           input_size=embed_size, lstm_hidden_size=512,
-    #                                           fc_hidden_size=256, output_size=output_size, num_layers=2)
-    #     scatter_visit_time_prediction(dataset, pre_model, time_output_type=time_output_type,
-    #                                   num_epoch=task_epoch, batch_size=task_batch_size, device=device)
+        pre_model = ScatterVisitTimePredictor(embed_layer, num_time_slots=num_time_slots,
+                                              input_size=embed_size, lstm_hidden_size=512,
+                                              fc_hidden_size=256, output_size=output_size, num_layers=2)
+        scatter_visit_time_prediction(dataset, pre_model, time_output_type=time_output_type,
+                                      num_epoch=task_epoch, batch_size=task_batch_size, device=device)
     
     # if task_name == 'classify':
     #     traj_pooling_type = 'lstm'

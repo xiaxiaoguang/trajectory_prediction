@@ -37,20 +37,25 @@ class FourierEncoding_IM(nn.Module):
         self.linear = nn.Linear(self.d_model, self.embed_size)
 
     def forward(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
-        batch_size = x.shape[0]
-
-        frequencies = self.frequencies.repeat(batch_size,1).unsqueeze(1).unsqueeze(1)  # Shape: [B ,F]
+        batch_size, seq_len = x.shape[0], x.shape[1]
+        
+        # 修正：frequencies 应该是 [d_model//2] 的一维张量
+        frequencies = self.frequencies.unsqueeze(0).unsqueeze(0)  # Shape: [1, 1, num_freq]
+        
+        x_expanded = x.unsqueeze(-1)  # [B, P, 1]
+        
         encoding = torch.cat([
-            torch.sin(frequencies * x.unsqueeze(-1)),  # Shape: [B, P, 2, num_freq]
-            torch.cos(frequencies * x.unsqueeze(-1))   # Shape: [B, P, 2, num_freq]
-        ], dim=-2)  # Shape: [B, P, 4, num_freq]
-        temporal_embedding = encoding.reshape(*encoding.shape[:2], 2 ,-1).sum(dim=-2)  # Shape: [B, P, 2 * num_freq]
-        # masked_src_tokens = kwargs['full_loc_seq']
-        # token_embedding = self.token_embed(masked_src_tokens)
-        # encoding = torch.cat([token_embedding,temporal_embedding],dim=-1)
-        encoding = self.linear(temporal_embedding)
-        encoding = self.transformer_encoder(encoding)
+            torch.sin(frequencies * x_expanded),  # [B, P, num_freq]
+            torch.cos(frequencies * x_expanded)   # [B, P, num_freq]
+        ], dim=-1)  # Shape: [B, P, 2*num_freq] = [B, P, d_model]
+        
+        # print(f"Encoding shape before linear: {encoding.shape}")
+        
+        temporal_embedding = self.linear(encoding)  # [B, P, embed_size]
+        encoding = self.transformer_encoder(temporal_embedding)
         return encoding
+
+
     
     def to(self, device):
         """Custom to() function to properly move buffers and modules to a new device."""

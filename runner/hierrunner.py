@@ -26,6 +26,7 @@ class HIERrunner(nn.Module):
         self.save_folder = "./results/pretraining/hier"
         if not os.path.exists(self.save_folder):
             os.makedirs(self.save_folder)
+            
         self.model_path = f"hier_{hier_num_layers}_{hier_week_embed_size}_{hier_hour_embed_size}_{hier_duration_embed_size}_\
             {embed_size}_{max_seq_len}_{embed_epoch}_{dataset_name}.pth"
         

@@ -12,7 +12,6 @@ from scipy import integrate
 
 from module.utils import next_batch, create_src_trg, weight_init, create_src, mean_absolute_percentage_error
 
-
 class ERPPTimePredictor(nn.Module, ABC):
     def __init__(self, embed_layer, input_size, lstm_hidden_size, hidden_size, output_size, num_layers):
         super().__init__()

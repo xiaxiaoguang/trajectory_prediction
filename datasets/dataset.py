@@ -109,7 +109,7 @@ class Dataset:
 
         #     seq_set.append(one_set)
 
-        return self.build_seq_set(data,max_len=96,include_delta=include_delta)
+        return self.build_seq_set(data, min_len=min_len, max_len=96, include_delta=include_delta)
 
     def gen_timeseries(self, min_len=0, select_days=None):
         data = pd.DataFrame(self.df, copy=True)

@@ -88,10 +88,10 @@ if __name__ == '__main__':
     if embed_name == 'hier':
 
         hiertrainer = HIERrunner(embed_size,
-                                dataset.num_loc,
-                                hidden_size,
-                                embed_epoch,
-                                max_seq_len,
+                                num_loc=dataset.num_loc,
+                                hidden_size=hidden_size,
+                                embed_epoch=embed_epoch,
+                                max_seq_len=max_seq_len,
                                 dataset_name=dataset_name)
         embed_layer = hiertrainer(dataset, device=device)
         
@@ -108,33 +108,35 @@ if __name__ == '__main__':
 
     if task_name == 'loc_pre':
         pre_model_seq2seq = True
-
+        output_size = 2 
         if pre_model_name == 'mc':
-            pre_model = MCLocPredictor(dataset.num_loc)
+            pre_model = MCLocPredictor(output_size)
             mc_next_loc_prediction(dataset, pre_model, pre_len)
         else:
             st_aux_embed_size = 16
             st_num_slots = 10
-    
+            
             if pre_model_name == 'erpp':
                 pre_model = ErppLocPredictor(embed_layer, input_size=embed_size, lstm_hidden_size=hidden_size,
-                                             fc_hidden_size=hidden_size, output_size=dataset.num_loc, num_layers=2, seq2seq=pre_model_seq2seq)
+                                             fc_hidden_size=hidden_size, output_size=output_size,
+                                               num_layers=2,seq2seq=pre_model_seq2seq)
             elif pre_model_name == 'stlstm':
                 pre_model = StlstmLocPredictor(embed_layer, num_slots=st_num_slots, aux_embed_size=st_aux_embed_size, time_thres=10800, dist_thres=0.1,
                                                input_size=embed_size, lstm_hidden_size=hidden_size,
-                                               fc_hidden_size=hidden_size, output_size=dataset.num_loc, num_layers=2, seq2seq=pre_model_seq2seq)
+                                               fc_hidden_size=hidden_size, output_size=output_size, 
+                                               num_layers=2, seq2seq=pre_model_seq2seq)
             elif pre_model_name == 'rnn':
                 pre_model = RnnLocPredictor(embed_layer, input_size=embed_size, rnn_hidden_size=hidden_size, fc_hidden_size=hidden_size,
-                                            output_size=dataset.num_loc, num_layers=1, seq2seq=pre_model_seq2seq)
+                                            output_size=output_size, num_layers=1, seq2seq=pre_model_seq2seq)
             elif pre_model_name == 'gru':
                 pre_model = Seq2SeqLocPredictor(embed_layer, input_size=embed_size, hidden_size=hidden_size,
-                                                output_size=dataset.num_loc, num_layers=2)
+                                                output_size=output_size, num_layers=2)
             elif pre_model_name == 'transformer':
                 pre_model = TransformerPredictor(embed_layer, input_size=embed_size, hidden_size=hidden_size,
-                                                output_size=dataset.num_loc, num_layers=2)
+                                                output_size=output_size, num_layers=2)
             elif pre_model_name == 'decoder':
                 pre_model = DecoderPredictor(embed_layer, input_size=embed_size, hidden_size=hidden_size,
-                                                output_size=2, num_layers=2)
+                                                output_size=output_size, num_layers=2)
             
             pre_model.pre_model_name = pre_model_name
             

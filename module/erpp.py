@@ -52,8 +52,7 @@ class ErppLocPredictor(nn.Module, ABC):
         event_embedding = self.embed_layer(full_seq, downstream=True, pre_len=pre_len, **kwargs)
 
         timestamp = kwargs['timestamp']
-        hours = timestamp % (24 * 60 * 60) / 60 / 60 / 24  # Normalize time to fraction of a day
-
+        hours = timestamp % (24 * 60 * 60) / 60 / 60 / 24  # Normal`ize time to fraction of a day
         lstm_input = torch.cat([event_embedding, hours.unsqueeze(-1)], dim=-1)
 
         if self.seq2seq:

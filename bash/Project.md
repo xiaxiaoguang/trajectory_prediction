@@ -20,65 +20,54 @@ Currently, our research focuses on:
 
 Here are our current experimental results. The training parameters and embedding size are kept consistent across all models to ensure a fair comparison. Our **pretrained Fourier embeddings** demonstrate superior effectiveness compared to models without pretrained embeddings. However, there is still a noticeable performance gap when compared to the **CTLE (Context and Time-Aware Location Embedding)** approach.  
 
-model_with_pretrained_embedding|Accuracy|Recall|F1_micro|F1_macro
--|-|-|-|-
-erpp_20_Fourier|0.050968|0.025593|0.050968|0.012206
-stlstm_20_Fourier|0.051809|0.026141|0.051809|0.012814
-rnn_20_Fourier|0.039588|0.018694|0.039588|0.007316
-gru_20_Fourier|0.044877|0.026248|0.044877|0.014529 
-decoder_20_Fourier|0.063189|0.059480|0.063189|0.042875
-transformer_20_Fourier|0.061586|0.056520|0.061586|0.039440
+## Next location prediction of Latitude and Longtitude
 
-model_WO_pretrained_embedding|Accuracy|Recall|F1_micro|F1_macro
--|-|-|-|-
-erpp_20|0.013463|0.003256|0.013463|0.000734
-stlstm_20|0.015106|0.004390|0.015106|0.001319
-rnn_20|0.017190|0.006710|0.017190|0.002766
-gru_20|0.014224|0.006858|0.014224|0.003724
-decoder_20|0.064110|0.062251|0.064110|0.047898
-transformer_20|0.066314|0.060498|0.066314|0.045106
+All training results on Taxi datasets
 
-model_with_pretrained_embedding|Accuracy|Recall|F1_micro|F1_macro
--|-|-|-|-
-erpp_20_ctle|0.051689|0.024430|0.051689|0.013265
-stlstm_20_ctle|0.050968|0.023019|0.050968|0.011874
-rnn_20_ctle|0.067476|0.050125|0.067476|0.038343
-gru_20_ctle|0.060624|0.043509|0.060624|0.034083
-decoder_20_ctle|0.065753|0.056738|0.065753|0.042888
-transformer_20_ctle|0.061746|0.056165|0.061746|0.041975
+model_embed_epoch|MAE|MSE|RMAE|MAPE|
+-|-|-|-|-|
+erpp_hier_20|0.063179|0.009140|0.095489|44.014057
+erpp_ctle_20|0.052859|0.007457|0.086176|54.512438
+erpp_fourier_20|0.030500|0.003467|0.058885|31.916752
+erpp_teaser_20|0.071256|0.009668|0.098263|69.409706
+stlstm_hier_20|0.058938|0.009258|0.093707|54.386267
+stlstm_ctle_20|0.062762|0.009420|0.096520|66.675620
+stlstm_fourier_20|0.055630|0.005138|0.071681|46.482868
+stlstm_teaser_20|0.062277|0.008861|0.094091|41.977295
+rnn_hier_20|0.064366|0.008770|0.093603|57.133127
+rnn_ctle_20|0.075242|0.010861|0.104059|69.067685
+rnn_fourier_20|0.053598|0.006060|0.077844|56.229359
+rnn_teaser_20|0.071827|0.010633|0.103117|67.465528
+gru_hier_20|0.216644|0.074388|0.272681|154.564946
+gru_ctle_20|0.220683|0.076758|0.276796|153.025940
+gru_fourier_20|0.150191|0.036191|0.190240|102.530502
+gru_teaser_20|0.228513|0.080099|0.282883|156.975866
+decoder_hier_20|0.085219|0.012836|0.113290|74.814934
+decoder_ctle_20|0.079447|0.011556|0.107480|70.217153
+decoder_fourier_20|0.025671|0.002520|0.050198|25.381582
+decoder_teaser_20|0.086983|0.013105|0.114461|72.637299
 
-model_with_pretrained_embedding|Accuracy|Recall|F1_micro|F1_macro
--|-|-|-|-
-erpp_20_hier|0.020355|0.007134|0.020355|0.002282
-stlstm_20_hier|0.021156|0.008166|0.021156|0.002628
-rnn_20_hier|0.011660|0.003508|0.011660|0.001260
-gru_20_hier|0.016989|0.009695|0.016989|0.006289
+All training results on MobilePek datasets
 
-model_with_pretrained_embedding|Accuracy|Recall|F1_micro|F1_macro
--|-|-|-|-
-rnn_20_skipgram|0.003686|0.000392|0.003686|0.000038
-erpp_20_skipgram|0.003446|0.000309|0.003446|0.000014
-gru_20_skipgram|0.002845|0.000241|0.002845|0.000024
-stlstm_20_skipgram|0.005089|0.000731|0.005089|0.000069
-
-model_with_pretrained_embedding|Accuracy|Recall|F1_micro|F1_macro
--|-|-|-|-
-rnn_20_tale|0.017951|0.007358|0.017951|0.003296
-erpp_20_tale|0.019834|0.006090|0.019834|0.001978
-gru_20_tale|0.019834|0.010947|0.019834|0.007018
-stlstm_20_tale|0.019874|0.006423|0.019874|0.002381
-
-model_with_pretrained_embedding|Accuracy|Recall|F1_micro|F1_macro
--|-|-|-|-
-rnn_20_teaser|0.003726|0.000352|0.003726|0.000034
-erpp_20_teaser|0.003606|0.000356|0.003606|0.000014
-gru_20_teaser|0.003366|0.000397|0.003366|0.000090
-stlstm_20_teaser|0.004408|0.000765|0.004408|0.000143
-
-
-model_with_pretrained_embedding|Accuracy|Recall|F1_micro|F1_macro
--|-|-|-|-
-rnn_20_poi2vec|0.014024|0.006366|0.014024|0.002123
-erpp_20_poi2vec|0.018872|0.006544|0.018872|0.002151
-gru_20_poi2vec|0.014986|0.007752|0.014986|0.004074
-stlstm_20_poi2vec|0.021757|0.007317|0.021757|0.002375
+model_embed_epoch|MAE|MSE|RMAE|MAPE|
+-|-|-|-|-|
+erpp_hier_20|0.036912|0.003281|0.057283|10.257857
+erpp_ctle_20|0.038718|0.003493|0.059097|10.071074
+erpp_fourier_20|0.030224|0.002447|0.049466|7.835022
+erpp_teaser_20|0.059467|0.007135|0.084466|16.332932
+stlstm_hier_20|0.036948|0.003317|0.057593|10.285524
+stlstm_ctle_20|0.038272|0.003442|0.058669|10.223886
+stlstm_fourier_20|0.030201|0.002375|0.048731|7.835775
+stlstm_teaser_20|0.058918|0.007015|0.083752|16.391380
+rnn_hier_20|0.039617|0.003656|0.060466|10.899536
+rnn_ctle_20|0.039810|0.003500|0.059157|10.444212
+rnn_fourier_20|0.031031|0.002606|0.051051|8.180257
+rnn_teaser_20|0.057177|0.006693|0.081809|15.822698
+gru_hier_20|0.040875|0.003627|0.060222|11.416270
+gru_ctle_20|0.038376|0.003436|0.058613|10.106173
+gru_fourier_20|0.030500|0.002414|0.049135|8.020671
+gru_teaser_20|0.065575|0.007958|0.089210|17.986450
+decoder_hier_20|0.039498|0.003526|0.059380|10.490977
+decoder_ctle_20|0.039604|0.003546|0.059548|10.370089
+decoder_fourier_20|0.035800|0.003194|0.056516|9.280954
+decoder_teaser_20|0.043221|0.003958|0.062916|11.728681

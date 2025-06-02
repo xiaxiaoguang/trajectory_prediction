@@ -142,10 +142,10 @@ if __name__ == '__main__':
             
             if embed_name == 'fourier':
                 fourier_locpred(dataset, pre_model, pre_len=pre_len, num_epoch=task_epoch,
-                           batch_size=64, device=device)
+                           batch_size=64, device=device,embed_name=embed_name)
             else:
                 loc_prediction(dataset, pre_model, pre_len=pre_len, num_epoch=task_epoch,
-                           batch_size=64, device=device)
+                           batch_size=64, device=device,embed_name=embed_name)
     
     if task_name == 'time_pre':
         pre_model_name = 'lstm'

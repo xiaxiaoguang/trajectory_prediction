@@ -33,7 +33,8 @@ class ErppLocPredictor(nn.Module, ABC):
         self.sos = nn.Parameter(torch.zeros(input_size + 1).float(), requires_grad=True)
 
         self.apply(weight_init)
-
+        self.seq2seq = seq2seq
+        
         self.embed_layer = embed_layer
         self.add_module('embed_layer', self.embed_layer)
 

@@ -121,41 +121,7 @@ Hier: Main model architecture.
 
 Training: train_hier
 
-3. StaticEmbed
-
-Module: embed.static
-
-Core Classes:
-
-StaticEmbed: Simple learned embedding table without temporal modeling.
-
-DownstreamEmbed: Wrapper for downstream task integration.
-
-4. Tale (Transformer Autoencoding of Location Embeddings)
-
-Module: embed.tale
-
-Core Classes:
-
-TaleData: Preprocessing class.
-
-Tale: Transformer-based encoder-decoder.
-
-Training: train_tale
-
-5. SkipGram (Word2Vec-style)
-
-Module: embed.w2v
-
-Core Classes:
-
-SkipGramData: Constructs trajectory context pairs.
-
-SkipGram: Word2Vec skip-gram architecture.
-
-Training: train_skipgram
-
-6. Teaser (Temporal Embedding and Sequence Alignment Representation)
+3. Teaser (Temporal Embedding and Sequence Alignment Representation)
 
 Module: embed.teaser
 
@@ -167,27 +133,15 @@ Teaser: Embedding model emphasizing temporal order.
 
 Training: train_teaser
 
-7. POI2Vec
-
-Module: embed.poi2vec
-
-Core Classes:
-
-P2VData: Prepares location-level training samples.
-
-POI2Vec: Learns embeddings from POI co-occurrence.
-
-Training: Not explicitly listed (used as base embedding).
-
-8. Fourier Encoding
+4. Fourier Encoding
 
 Module: embed.fourier
 
 Core Classes:
 
-FourierEncoding_IM: Uses Fourier transform for time encoding.
+FourierEncoding_IM: Uses fourier form for latitude and longititude encoding.
 
-Masked_GC: Graph convolution head with masking.
+Masked_GC / Masked_LM :
 
 Training: train_fourier
 
